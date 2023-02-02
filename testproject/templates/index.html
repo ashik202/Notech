@@ -19,7 +19,7 @@
       </div>
       <div class="form-group">
         <label for="email">Email</label>
-        <input type="email" class="form-control" name="inputEmail" id="inputEmail" placeholder="Enter email">
+        <input type="email" class="form-control" name="email" id="email" placeholder="Enter email">
       </div>
       <div class="form-group">
         <label for="number">Number</label>
@@ -38,4 +38,39 @@
 
 
 </body>
+<script>
+$(document).ready(function(){
+    var email_exists = false;
+    $("#email").change(function(){
+        var email = $(this).val();
+        var token = $('input[name=csrfmiddlewaretoken]').val()
+        $.ajax({
+            method: "GET",
+            url: "/check_email",
+            data: {
+                'email': email,
+                 csrfmiddlewaretoken: token
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#email-result").text("Email is already in use.");
+                    email_exists = true;
+                } else {
+                    $("#email-result").text("Email is available.");
+                    email_exists = false;
+                }
+            }
+        });
+    });
+
+    $("form").submit(function(event){
+        if (email_exists) {
+            event.preventDefault();
+            alert("Email is already in use.");
+        }
+    });
+});
+</script>
 </html>
+

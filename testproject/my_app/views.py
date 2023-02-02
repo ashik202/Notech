@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 from .models import Reg
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -8,7 +9,7 @@ def landingpage(request):
     if request.method == 'POST':
         name=request.POST['inputName']
         phone = request.POST['inputPhone']
-        email = request.POST['inputEmail']
+        email = request.POST['email']
         password = request.POST['inputPassword']
         reg=Reg(name=name,phone=phone,email=email,password=password)
         reg.save()
@@ -29,3 +30,12 @@ def listpage(request):
         page_obj = p.page(p.num_pages)
     context = {'page_obj': page_obj}
     return render(request,'lists.html',context)
+
+def check_email(request):
+    print('hello')
+    email = request.GET.get('email', None)
+    print(email)
+    data = {
+        'is_taken': Reg.objects.filter(email=email).exists()
+    }
+    return JsonResponse(data)
